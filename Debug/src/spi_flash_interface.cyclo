@@ -1,0 +1,3 @@
+../src/spi_flash_interface.c:40:6:spi_flash_gpio_init	2
+../src/spi_flash_interface.c:73:6:spi_flash_interface_initialize_SPI	1
+../src/spi_flash_interface.c:92:9:spi_flash_read_status_register	1
