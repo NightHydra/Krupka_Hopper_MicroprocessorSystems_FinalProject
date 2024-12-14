@@ -1,3 +1,4 @@
+"./src/SamplePrograms/Simple_Test/ApplicationMain.o"
 "./src/init.o"
 "./src/main.o"
 "./src/spi_flash_interface.o"

@@ -29,7 +29,7 @@
 
 SPI_HandleTypeDef flash_spi_handle;
 
-GPIO_TypeDef * cartridge_nss_ports[MAX_NUMBER_OF_CARTRIDGES] = {GPIOA, GPIOH, GPIOJ};
+GPIO_TypeDef * cartridge_nss_ports[MAX_NUMBER_OF_CARTRIDGES] = {GPIOA, GPIOH, GPIOJ}; // D10, D9,D8
 uint16_t cartridge_nss_pin_numbers[MAX_NUMBER_OF_CARTRIDGES] = {GPIO_PIN_11, GPIO_PIN_6, GPIO_PIN_4};
 
 
@@ -66,6 +66,9 @@ void spi_flash_gpio_init()
 	{
 		nss_control_pin_init_struct.Pin = cartridge_nss_pin_numbers[i];
 		HAL_GPIO_Init(cartridge_nss_ports[i], &nss_control_pin_init_struct);
+
+		// MAKE SURE IT IS HIGH TO START
+		HAL_GPIO_WritePin(cartridge_nss_ports[i], cartridge_nss_pin_numbers[i], GPIO_PIN_SET);
 	}
 
 }
@@ -78,15 +81,29 @@ void spi_flash_interface_initialize_SPI()
 	flash_spi_handle.Init.Mode = SPI_MODE_MASTER; // Set master mode
 	flash_spi_handle.Init.TIMode = SPI_TIMODE_DISABLE; // Use Motorola mode, not TI mode
 	flash_spi_handle.Init.Direction = SPI_DIRECTION_2LINES; //Subject to change?
-	flash_spi_handle.Init.FirstBit = SPI_FIRSTBIT_LSB;
-	flash_spi_handle.Init.DataSize = SPI_DATASIZE_16BIT;
+	flash_spi_handle.Init.FirstBit = SPI_FIRSTBIT_MSB;
+	flash_spi_handle.Init.DataSize = SPI_DATASIZE_8BIT;
 	flash_spi_handle.Init.CLKPolarity = SPI_POLARITY_LOW;
-	flash_spi_handle.Init.CLKPhase = SPI_PHASE_2EDGE;
+	flash_spi_handle.Init.CLKPhase = SPI_PHASE_1EDGE;
 	flash_spi_handle.Init.NSS = SPI_NSS_SOFT;
 	flash_spi_handle.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
-	flash_spi_handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+	flash_spi_handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
 
 	HAL_SPI_Init(&flash_spi_handle);
+}
+
+void spi_flash_enable_write()
+{
+	uint8_t to_tx = 0x06;
+
+	uint8_t rx_buf;
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_RESET);
+
+	HAL_SPI_TransmitReceive(&flash_spi_handle, &to_tx, &rx_buf, 1, HAL_MAX_DELAY);
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
+
 }
 
 uint8_t spi_flash_read_status_register()
@@ -95,7 +112,67 @@ uint8_t spi_flash_read_status_register()
 
 	uint8_t rx_buf[2];
 
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_RESET);
+
 	HAL_SPI_TransmitReceive(&flash_spi_handle, to_tx, rx_buf, 2, HAL_MAX_DELAY);
 
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
+
 	return rx_buf[1];
+}
+
+void spi_flash_write_page(uint8_t * const data, uint16_t const datalen,
+		uint32_t const addr)
+{
+	spi_flash_enable_write();
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_RESET);
+
+	uint8_t setup_sequence[4];
+	setup_sequence[0] = 0x02; // The write instruction
+	setup_sequence[1] = (uint8_t) (addr >> 16);
+	setup_sequence[2] = (uint8_t) (addr >> 8);
+	setup_sequence[3] = (uint8_t) (addr);
+
+	HAL_SPI_Transmit(&flash_spi_handle, setup_sequence, 4, HAL_MAX_DELAY);
+
+	HAL_SPI_Transmit(&flash_spi_handle, data, datalen, HAL_MAX_DELAY);
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
+
+}
+
+void spi_flash_read_page(uint8_t * const databuf, uint16_t const datalen,
+		uint32_t const addr)
+{
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_RESET);
+
+	uint8_t setup_sequence[4];
+	setup_sequence[0] = 0x03; // The write instruction
+	setup_sequence[1] = (uint8_t) (addr >> 16);
+	setup_sequence[2] = (uint8_t) (addr >> 8);
+	setup_sequence[3] = (uint8_t) (addr);
+
+	HAL_SPI_Transmit(&flash_spi_handle, setup_sequence, 4, HAL_MAX_DELAY);
+
+	HAL_SPI_TransmitReceive(&flash_spi_handle, databuf, databuf, datalen, HAL_MAX_DELAY);
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
+}
+
+void spi_flash_erase_sector(uint32_t addr)
+{
+	spi_flash_enable_write();
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_RESET);
+
+	uint8_t command_seq[4];
+	command_seq[0] = 0x20;
+	command_seq[1] = (uint8_t) (addr >> 16);
+	command_seq[2] = (uint8_t) (addr >> 8);
+	command_seq[3] = (uint8_t) (addr);
+
+	HAL_SPI_Transmit(&flash_spi_handle, command_seq, 4, HAL_MAX_DELAY);
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
 }

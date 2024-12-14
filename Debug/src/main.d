@@ -36,7 +36,8 @@ src/main.o: ../src/main.c \
  C:/MicroprocessorSystems/stm32lib/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex.h \
  C:/MicroprocessorSystems/FinalTemplate/inc/uart.h \
  C:/MicroprocessorSystems/FinalTemplate/inc/spi_flash_interface.h \
- C:/MicroprocessorSystems/FinalTemplate/inc/init.h
+ C:/MicroprocessorSystems/FinalTemplate/inc/init.h \
+ C:/MicroprocessorSystems/FinalTemplate/inc/SamplePrograms/Simple_test/ApplicationMain.h
 C:/MicroprocessorSystems/FinalTemplate/inc/init.h:
 C:/MicroprocessorSystems/stm32lib/CMSIS/Device/ST/STM32F7xx/Include/stm32f769xx.h:
 C:/MicroprocessorSystems/stm32lib/CMSIS/Include/core_cm7.h:
@@ -75,3 +76,4 @@ C:/MicroprocessorSystems/stm32lib/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart_ex
 C:/MicroprocessorSystems/FinalTemplate/inc/uart.h:
 C:/MicroprocessorSystems/FinalTemplate/inc/spi_flash_interface.h:
 C:/MicroprocessorSystems/FinalTemplate/inc/init.h:
+C:/MicroprocessorSystems/FinalTemplate/inc/SamplePrograms/Simple_test/ApplicationMain.h:

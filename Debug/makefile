@@ -13,6 +13,7 @@ RM := rm -rf
 -include stm32lib/STM32F7xx_HAL_Driver/Src/subdir.mk
 -include stm32lib/CMSIS/Device/ST/STM32F7xx/Source/Templates/subdir.mk
 -include startup/subdir.mk
+-include src/SamplePrograms/Simple_Test/subdir.mk
 -include src/subdir.mk
 -include objects.mk
 

@@ -82,6 +82,14 @@ SECTIONS
     *(.apptext)
     *(.apptext*)
   }
+  
+  .apptext :
+  {
+    . = ALIGN(4);
+    Application*(.text)
+    Application*(.text*)
+  } >ROM
+  
   /* The program code and other data into ROM memory */
   .text :
   {

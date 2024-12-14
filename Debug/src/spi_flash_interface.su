@@ -1,3 +1,7 @@
 ../src/spi_flash_interface.c:40:6:spi_flash_gpio_init	56	static
-../src/spi_flash_interface.c:73:6:spi_flash_interface_initialize_SPI	8	static
-../src/spi_flash_interface.c:92:9:spi_flash_read_status_register	24	static
+../src/spi_flash_interface.c:76:6:spi_flash_interface_initialize_SPI	8	static
+../src/spi_flash_interface.c:95:6:spi_flash_enable_write	24	static
+../src/spi_flash_interface.c:109:9:spi_flash_read_status_register	24	static
+../src/spi_flash_interface.c:124:6:spi_flash_write_page	32	static
+../src/spi_flash_interface.c:145:6:spi_flash_read_page	40	static
+../src/spi_flash_interface.c:163:6:spi_flash_erase_sector	24	static
