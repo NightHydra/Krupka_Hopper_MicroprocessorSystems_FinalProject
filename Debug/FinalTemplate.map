@@ -2848,7 +2848,8 @@ Discarded input sections
 Memory Configuration
 
 Name             Origin             Length             Attributes
-RAM              0x20000000         0x00080000         xrw
+RAM              0x20000000         0x00040000         xrw
+APPRAM           0x20040000         0x00040000         xrw
 ROM              0x08000000         0x00200000         xr
 *default*        0x00000000         0xffffffff
 
@@ -2911,8 +2912,8 @@ LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  *(.apptext)
  *(.apptext*)
 
-.apptext        0x080001f8        0x0
-                0x080001f8                        . = ALIGN (0x4)
+.apptext        0x20040000        0x0
+                0x20040000                        . = ALIGN (0x4)
  Application*(.text)
  Application*(.text*)
 
