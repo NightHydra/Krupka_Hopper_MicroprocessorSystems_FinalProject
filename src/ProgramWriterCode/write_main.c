@@ -60,6 +60,5 @@ int main(void){
 
 #endif
 		inc(&x, 2);
-		printf("FUCK\r\n");
 	}
 }
