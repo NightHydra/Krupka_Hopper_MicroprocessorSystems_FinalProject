@@ -24,4 +24,7 @@ void spi_flash_read_page(uint8_t * const databuf, uint16_t const datalen,
 
 void spi_flash_erase_sector(uint32_t addr);
 
+void spi_flash_write_function(uint32_t const flash_addr, uint16_t num_bytes,
+	uint8_t * memptr);
+
 #endif /* INC_SPI_FLASH_INTERFACE_H_ */

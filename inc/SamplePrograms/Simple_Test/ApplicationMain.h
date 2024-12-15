@@ -10,7 +10,7 @@
 
 #include "init.h"
 
-int applicationMain();
+void appFrame(uint8_t * a, uint8_t x);
 
 
 #endif /* INC_SAMPLEPROGRAMS_SIMPLE_TEST_APPLICATIONMAIN_H_ */
