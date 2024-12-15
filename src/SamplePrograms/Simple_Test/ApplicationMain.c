@@ -7,12 +7,7 @@
 
 #include "SamplePrograms/Simple_Test/ApplicationMain.h"
 
-int applicationMain()
+void appFrame(uint8_t * a, uint8_t x)
 {
-	uint16_t a = 0;
-
-	while (1)
-	{
-		a++;
-	}
+	(*a) += x;
 }

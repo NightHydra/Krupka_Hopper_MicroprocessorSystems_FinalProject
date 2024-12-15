@@ -6,19 +6,16 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../src/init.c \
-../src/main.c \
 ../src/spi_flash_interface.c \
 ../src/uart.c 
 
 OBJS += \
 ./src/init.o \
-./src/main.o \
 ./src/spi_flash_interface.o \
 ./src/uart.o 
 
 C_DEPS += \
 ./src/init.d \
-./src/main.d \
 ./src/spi_flash_interface.d \
 ./src/uart.d 
 
@@ -30,7 +27,7 @@ src/%.o src/%.su src/%.cyclo: ../src/%.c src/subdir.mk
 clean: clean-src
 
 clean-src:
-	-$(RM) ./src/init.cyclo ./src/init.d ./src/init.o ./src/init.su ./src/main.cyclo ./src/main.d ./src/main.o ./src/main.su ./src/spi_flash_interface.cyclo ./src/spi_flash_interface.d ./src/spi_flash_interface.o ./src/spi_flash_interface.su ./src/uart.cyclo ./src/uart.d ./src/uart.o ./src/uart.su
+	-$(RM) ./src/init.cyclo ./src/init.d ./src/init.o ./src/init.su ./src/spi_flash_interface.cyclo ./src/spi_flash_interface.d ./src/spi_flash_interface.o ./src/spi_flash_interface.su ./src/uart.cyclo ./src/uart.d ./src/uart.o ./src/uart.su
 
 .PHONY: clean-src
 

@@ -7,6 +7,7 @@
 
 
 #include "spi_flash_interface.h"
+#include "stdbool.h"
 
 /** ===================================================================
  * #DEFINES
@@ -103,8 +104,23 @@ void spi_flash_enable_write()
 	HAL_SPI_TransmitReceive(&flash_spi_handle, &to_tx, &rx_buf, 1, HAL_MAX_DELAY);
 
 	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
-
 }
+
+bool spi_flash_erase_or_write_in_progess()
+{
+	uint8_t to_tx[2] = {0x05, 0x00};
+
+	uint8_t rx_buf[2];
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_RESET);
+
+	HAL_SPI_TransmitReceive(&flash_spi_handle, to_tx, rx_buf, 2, HAL_MAX_DELAY);
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
+
+	return (rx_buf[1] &0x01);
+}
+
 
 uint8_t spi_flash_read_status_register()
 {
@@ -176,3 +192,25 @@ void spi_flash_erase_sector(uint32_t addr)
 
 	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
 }
+
+void spi_flash_write_function(uint32_t flash_addr, uint16_t num_bytes,
+	uint8_t * func_ptr)
+{
+	spi_flash_erase_sector(flash_addr);
+
+	while(spi_flash_erase_or_write_in_progess())
+	{
+
+	}
+
+	// Less than or equal to 256 bytes and just go to the last one
+	while (num_bytes > 256)
+	{
+		spi_flash_write_page(func_ptr, 256, flash_addr);
+		flash_addr += 256;
+		func_ptr +=256;
+		num_bytes -= 256;
+	}
+	spi_flash_write_page(func_ptr, num_bytes, flash_addr);
+}
+
