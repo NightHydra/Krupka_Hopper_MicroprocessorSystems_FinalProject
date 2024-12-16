@@ -1,0 +1,9 @@
+../src/spi_flash_interface.c:41:6:spi_flash_gpio_init	2
+../src/spi_flash_interface.c:77:6:spi_flash_interface_initialize_SPI	1
+../src/spi_flash_interface.c:96:6:spi_flash_enable_write	1
+../src/spi_flash_interface.c:109:6:spi_flash_erase_or_write_in_progess	1
+../src/spi_flash_interface.c:125:9:spi_flash_read_status_register	1
+../src/spi_flash_interface.c:140:6:spi_flash_write_page	1
+../src/spi_flash_interface.c:161:6:spi_flash_read_page	1
+../src/spi_flash_interface.c:179:6:spi_flash_erase_sector	1
+../src/spi_flash_interface.c:196:6:spi_flash_write_function	3

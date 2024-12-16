@@ -1,0 +1,15 @@
+../src/uart.c:8:6:HAL_UART_MspInit	3
+../src/uart.c:53:6:initUart	1
+../src/uart.c:80:5:_write	1
+../src/uart.c:86:5:_read	1
+../src/uart.c:106:6:uart_print	1
+../src/uart.c:112:6:uart_getchar	2
+../src/uart.c:120:6:uart_putchar	1
+../src/uart.c:127:5:uart_getline	3
+../src/uart.c:151:28:_close	1
+../src/uart.c:152:28:_lseek	1
+../src/uart.c:153:28:_fstat	1
+../src/uart.c:154:28:_getpid	1
+../src/uart.c:155:28:_ispid	1
+../src/uart.c:156:28:_kill	1
+../src/uart.c:157:28:_isatty	1

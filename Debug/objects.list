@@ -1,4 +1,3 @@
-"./src/ProgramWriterCode/write_main.o"
 "./src/SamplePrograms/Simple_Test/ApplicationMain.o"
 "./src/init.o"
 "./src/spi_flash_interface.o"
