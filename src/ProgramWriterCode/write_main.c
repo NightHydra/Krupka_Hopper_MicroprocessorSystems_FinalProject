@@ -6,17 +6,11 @@ uint8_t data_to_write[] = "To catch them is my real test, to train them is my ca
 uint8_t read_buf[256] = {0};
 
 //#define ERASE
-#define WRITEx
+#define WRITE
 #define READx
 
 
-
-static void inc(uint8_t * a, uint8_t x)
-{
-	(*a) +=  x;
-}
-
-static uint8_t func[200];
+uint8_t copyfunc[200];
 
 int main(void){
 
@@ -37,28 +31,22 @@ int main(void){
 
 	//inc(&x);
 
+	// If we conveniently make sure to copy the previous function then everything
+	//     works out alright
+	memcpy(copyfunc, (uint8_t *)(appFrame-41), 200);
 
-#ifdef WRITE
 	spi_flash_write_function(0x00, 200, (uint8_t *) (appFrame-1));
-#endif
 
-#ifdef READ
-	spi_flash_read_page(func, 200, 0x00);
+	void (* myFunc)(uint8_t *, uint8_t);
+	myFunc = (void (*)(uint8_t *, uint8_t )) (copyfunc+41);
 
-	void (*myFunc)(uint8_t * , uint8_t );
-	myFunc = (void (*)(uint8_t *, uint8_t )) (func-1);
-#endif
+	// UNCOMMENT THIS LINE TO SEE HOW RELATIVE ADDRESSES WORK
+	myFunc(&x, 1);
 
+	printf("WROTE FUNCTION\r\n");
+	printf("%x\r\n", copyfunc);
 	while(1)
 	{
-#ifdef READ
 
-		appFrame(&x, 1);
-		myFunc(&x, 2);
-
-		printf("%d\r\n", x);
-
-#endif
-		inc(&x, 2);
 	}
 }

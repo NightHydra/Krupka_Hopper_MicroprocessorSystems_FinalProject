@@ -200,17 +200,20 @@ void spi_flash_write_function(uint32_t flash_addr, uint16_t num_bytes,
 
 	while(spi_flash_erase_or_write_in_progess())
 	{
-
+		printf("Waiting....\r\n");
 	}
 
 	// Less than or equal to 256 bytes and just go to the last one
 	while (num_bytes > 256)
 	{
+
 		spi_flash_write_page(func_ptr, 256, flash_addr);
 		flash_addr += 256;
 		func_ptr +=256;
 		num_bytes -= 256;
 	}
+
+
 	spi_flash_write_page(func_ptr, num_bytes, flash_addr);
 }
 

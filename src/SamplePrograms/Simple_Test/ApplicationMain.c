@@ -7,7 +7,18 @@
 
 #include "SamplePrograms/Simple_Test/ApplicationMain.h"
 
+
+void innerFunc(uint8_t * b)
+{
+	(*b)+=5;
+}
+
+
 void appFrame(uint8_t * a, uint8_t x)
 {
-	(*a) += x;
+	while (1)
+	{
+		(*a) += x;
+		innerFunc(&x);
+	}
 }
