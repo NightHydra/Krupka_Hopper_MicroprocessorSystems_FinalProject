@@ -8,8 +8,8 @@
 #ifndef INC_CARTRIDGE_OBJECT_H_
 #define INC_CARTRIDGE_OBJECT_H_
 
-#include "spi_flash_interface.h"
 #include "stdbool.h"
+#include "init.h"
 
 
 #define CARTRIDGE_ROM_BUFFER_SIZE (255)
@@ -20,10 +20,9 @@ typedef struct
 	uint8_t cart_rom[CARTRIDGE_ROM_BUFFER_SIZE];
 	uint32_t num_bytes;
 
-	uint32_t cart_high_byte;
-	uint32_t cart_low_byte;
+	uint8_t cart_unique_id[8];
 
-	bool data_initialized = false;
+	bool data_initialized;
 
 	uint8_t cart_save_data[CARTRIDGE_SAVE_DATA_SIZE];
 
@@ -41,6 +40,8 @@ typedef struct
 bool ensure_device_id_is_still_the_same(cartridge_t const * const cart, uint8_t const cart_slot_ind);
 
 bool init_flash_cartridge(cartridge_t * const cart, uint8_t cart_slot_ind);
+
+bool cart_ids_match(cartridge_t const * const the_cart, uint8_t * read_id);
 
 
 
