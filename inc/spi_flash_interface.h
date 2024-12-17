@@ -13,6 +13,8 @@
 
 void spi_flash_interface_initialize_SPI();
 
+void spi_flash_interface_validate_chip();
+
 void spi_flash_enable_write();
 uint8_t spi_flash_read_status_register();
 

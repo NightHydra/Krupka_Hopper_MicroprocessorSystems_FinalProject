@@ -9,6 +9,7 @@
 "./stm32lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.o"
 "./stm32lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_adc.o"
 "./stm32lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_cortex.o"
+"./stm32lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.o"
 "./stm32lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_gpio.o"
 "./stm32lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr.o"
 "./stm32lib/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.o"
