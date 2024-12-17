@@ -43,7 +43,7 @@ void spi_flash_gpio_init()
 	// Initialize the MOSI and MISO pins
 	GPIO_InitTypeDef spi_pins_init_struct = {0};
 
-	spi_pins_init_struct.Pin = MOSI_PIN |MISO_PIN;
+	spi_pins_init_struct.Pin = MOSI_PIN | MISO_PIN;
 	spi_pins_init_struct.Mode = GPIO_MODE_AF_PP;
 	spi_pins_init_struct.Pull = GPIO_NOPULL;
 	spi_pins_init_struct.Speed = GPIO_SPEED_HIGH;
@@ -91,6 +91,35 @@ void spi_flash_interface_initialize_SPI()
 	flash_spi_handle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
 
 	HAL_SPI_Init(&flash_spi_handle);
+}
+
+void spi_flash_interface_validate_chip()
+{
+	uint8_t instruction = 0x4b;
+	uint8_t dummy_bytes[4] = {0};
+
+	uint8_t high_byte_buf[4] = {0};
+	uint8_t low_byte_buf[4] = {0};
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_RESET);
+
+	HAL_SPI_Transmit(&flash_spi_handle, &instruction, 1, HAL_MAX_DELAY);
+	HAL_SPI_Transmit(&flash_spi_handle, dummy_bytes, 4, HAL_MAX_DELAY);
+	HAL_SPI_TransmitReceive(&flash_spi_handle, dummy_bytes, high_byte_buf, 4, HAL_MAX_DELAY);
+	HAL_SPI_TransmitReceive(&flash_spi_handle, dummy_bytes, low_byte_buf, 4, HAL_MAX_DELAY);
+
+	HAL_GPIO_WritePin(cartridge_nss_ports[0], cartridge_nss_pin_numbers[0], GPIO_PIN_SET);
+
+	printf("CHIP ID: ");
+	for (uint8_t i = 0; i<4; ++i)
+	{
+		printf("%d", high_byte_buf[i]);
+	}
+	for (uint8_t i = 0; i<4; ++i)
+	{
+		printf("%d", low_byte_buf[i]);
+	}
+	printf("\r\n");
 }
 
 void spi_flash_enable_write()
@@ -215,5 +244,10 @@ void spi_flash_write_function(uint32_t flash_addr, uint16_t num_bytes,
 
 
 	spi_flash_write_page(func_ptr, num_bytes, flash_addr);
+
+	while(spi_flash_erase_or_write_in_progess())
+	{
+		printf("Waiting2....\r\n");
+	}
 }
 
