@@ -1,0 +1,16 @@
+@startuml
+hide empty description
+[*] --> ReadyToPoll : Timer Interrupt / DMA Completion Interrupt
+
+
+ReadyToPoll --> PollingDeviceID : Start DMA SPI RX
+
+PollingDeviceID --> ReadyToPoll : Increment Index To Poll
+
+PollingDeviceID --> ReadingInROM : Flag the cart as invalid \n Read in 1 word for the program length \n and Start DMA RX for that many bytes
+
+ReadingInROM --> ReadingInSAV : Read in 1 word for the save header \n and Start DMA RX for #bytes in save
+
+ReadingInSAV --> ReadyToPoll : Flag that the cartridge is valid \n Increment the Index To Poll
+
+@enduml

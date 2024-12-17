@@ -36,7 +36,7 @@ int main(void){
 	// If we conveniently make sure to copy the previous function then everything
 	//     works out alright
 
-	spi_flash_write_function(0x00, 200, (uint8_t *) (appFrame-1));
+	spi_flash_write_function(0x00, 200, (uint8_t *) (appFrame-1), 0);
 
 
 	printf("WROTE FUNCTION\r\n");

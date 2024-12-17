@@ -1,6 +1,8 @@
 #include "init.h"
 #include "spi_flash_interface.h"
 #include "SamplePrograms/Simple_test/ApplicationMain.h"
+#include "cartridge_object.h"
+#include "stdbool.h"
 
 
 /*=========================================================================
@@ -14,7 +16,7 @@
 #define STACK_SPACE_FOR_OS_CALL (100)
 #define STACK_SPACE_NEEDED_PER_FUNCTION (500)
 
-#define MAX_NUMBER_OF_EXTERNAL_PROGRAMS (2)
+#define MAX_NUMBER_OF_EXTERNAL_PROGRAMS (3)
 
 
 /** =======================================================================
@@ -40,9 +42,11 @@ uint8_t num_to_inc2 = 0;
 #define READ
 
 
-static uint8_t func[200];
+static cartridge_t my_carts[3];
 
-void (* myFunc)(uint8_t *, uint8_t);
+void (* myFunc1)(uint8_t *, uint8_t);
+void (* myFunc2)(uint8_t *, uint8_t);
+void (* myFunc3)(uint8_t *, uint8_t);
 
 DMA_HandleTypeDef DMAHandle;
 void InitDMA()
@@ -105,24 +109,28 @@ int main(void){
 
 	//inc(&x);
 
-	spi_flash_read_page(func, 200, 0x00);
+	spi_flash_begin_autonomous_reads(my_carts);
 
 	// Store the "base stack pointer" in this variable
 	asm("STR r13, %0" : "=m" (base_sp));
 
+	for (uint8_t i = 0; i<3; ++i)
+	{
+		my_carts[i].data_initialized = false;
+	}
 
-	myFunc = (void (*) (uint8_t *, uint8_t) )(func+1);
+
+	myFunc1 = (void (*) (uint8_t *, uint8_t) )(my_carts[0].cart_rom+1);
+	myFunc2 = (void (*) (uint8_t *, uint8_t) )(my_carts[1].cart_rom+1);
+	myFunc3 = (void (*) (uint8_t *, uint8_t) )(my_carts[2].cart_rom+1);
 
 	printf("DONE\r\n");
 
-	SimpleOS();
+
 
 	while(1)
 	{
-
-
-
-
+		SimpleOS();
 	}
 }
 
@@ -166,12 +174,22 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
 
 }
 
+void prog_index_inc(uint8_t * ind)
+{
+	++(*ind);
+	if (*ind == MAX_NUMBER_OF_EXTERNAL_PROGRAMS)
+	{
+		*ind = 0;
+	}
+}
+
 void SimpleOS()
 {
-	++prog_index;
-	if(prog_index == MAX_NUMBER_OF_EXTERNAL_PROGRAMS)
+	prog_index_inc(&prog_index);
+
+	while (!my_carts[prog_index].data_initialized)
 	{
-		prog_index = 0;
+		prog_index_inc(&prog_index);
 	}
 
 	uint32_t new_sp_loc;
@@ -182,7 +200,7 @@ void SimpleOS()
 		asm volatile ("MOV sp, %0" :
 				"+r" (new_sp_loc));
 		// Now call the function
-		myFunc(&num_to_inc1, 1);
+		myFunc1(&num_to_inc1, 1);
 	}
 
 	else if (prog_index == 1)
@@ -191,7 +209,16 @@ void SimpleOS()
 				STACK_SPACE_NEEDED_PER_FUNCTION;
 		asm volatile ("MOV sp, %0" :
 				"+r" (new_sp_loc));
-		myFunc(&num_to_inc2, 2);
+		myFunc2(&num_to_inc2, 2);
+	}
+
+	else if (prog_index == 2)
+	{
+		new_sp_loc = base_sp - STACK_SPACE_NEEDED_FOR_MAIN - STACK_SPACE_FOR_OS_CALL -
+			2*STACK_SPACE_NEEDED_PER_FUNCTION;
+		asm volatile ("MOV sp, %0" :
+			"+r" (new_sp_loc));
+		myFunc3(&num_to_inc2, -1);
 	}
 
 
