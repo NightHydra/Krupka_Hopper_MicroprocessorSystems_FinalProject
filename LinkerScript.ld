@@ -62,7 +62,7 @@ _Min_Stack_Size = 0x2000; /* required amount of stack */
 MEMORY
 {
   RAM (xrw)		: ORIGIN = 0x20000000, LENGTH = 256K
-  APPRAM (xrw)  : ORIGIN = 0x20040000, LENGTH = 256K
+  APPRAM (xrw)  : ORIGIN = 0x20040000, LENGTH = 128K
   ROM (rx)		: ORIGIN = 0x8000000, LENGTH = 2048K
 }
 
@@ -76,19 +76,17 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >ROM
-	
-  .apptext :
-  {
-    . = ALIGN(4);
-    *(.apptext)
-    *(.apptext*)
-  }
   
-  .apptext :
+  .appdat :
   {
-    . = ALIGN(4);
-    Application*(.text)
-    Application*(.text*)
+  	. = ALIGN(4);
+  	*./src/SamplePrograms/Simple_Test*(.text*)
+  	__appbegin = .;
+  	*./src/SamplePrograms/Simple_Test*(.rodata*)
+  	*./src/SamplePrograms/Simple_Test*(.data*)
+  	*./src/SamplePrograms/Simple_Test*(.bss*)
+  	. = ALIGN(4);
+  	__append = .;
   } >APPRAM
   
   /* The program code and other data into ROM memory */
@@ -107,8 +105,7 @@ SECTIONS
     . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
   } >ROM
-
-  /* Constant data into ROM memory*/
+  
   .rodata :
   {
     . = ALIGN(4);

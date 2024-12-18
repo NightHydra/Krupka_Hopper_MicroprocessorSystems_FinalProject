@@ -49,34 +49,7 @@ void (* myFunc2)(uint8_t *, uint8_t);
 void (* myFunc3)(uint8_t *, uint8_t);
 
 DMA_HandleTypeDef DMAHandle;
-void InitDMA()
-{
-	__HAL_RCC_DMA2_CLK_ENABLE();
-	__HAL_RCC_SYSCFG_CLK_ENABLE();
 
-
-	DMAHandle.Instance = DMA2_Stream0;
-	DMAHandle.Init.Channel = DMA_CHANNEL_0;
-	DMAHandle.Init.Direction = DMA_MEMORY_TO_MEMORY;
-	DMAHandle.Init.PeriphInc = DMA_PINC_DISABLE;
-	DMAHandle.Init.MemInc = DMA_MINC_DISABLE;
-	DMAHandle.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-	DMAHandle.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-	DMAHandle.Init.Mode = DMA_CIRCULAR;
-	DMAHandle.Init.Priority = DMA_PRIORITY_VERY_HIGH;				// Table 9.7 Textbook
-	DMAHandle.Init.FIFOMode = DMA_FIFOMODE_ENABLE;				//
-	DMAHandle.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;		// Table 9.12 Textbook
-	DMAHandle.Init.MemBurst = DMA_MBURST_SINGLE;				// Table 9.13 Textbook
-	DMAHandle.Init.PeriphBurst = DMA_MBURST_SINGLE;
-	//DMAHandle.XferHalfCpltCallback = NULL;
-	//DMAHandle.XferErrorCallback = NULL;
-
-
-	//HAL_DMA_Start(&DMAHandle, uint32_t SrcAddress, uint32_t DstAddress, uint32_t DataLength);
-	HAL_DMA_Init(&DMAHandle);
-
-	//HAL_DMA_RegisterCallback(&hdma, HAL_DMA_XFER_CPLT_CB_ID, &DMATransferComplete);
-}
 
 
 void switchGameButtonInit()
@@ -100,7 +73,6 @@ void safeFuncCall();
 int main(void){
 
 	Sys_Init();
-	InitDMA();
 
 	// Read the README in the base directory of this project.
 	spi_flash_interface_initialize_SPI();

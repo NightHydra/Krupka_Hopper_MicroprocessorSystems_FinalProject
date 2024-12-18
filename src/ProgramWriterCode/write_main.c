@@ -9,6 +9,9 @@ uint8_t read_buf[256] = {0};
 #define WRITE
 #define READx
 
+extern int appbegin;
+extern int append;
+
 
 uint8_t copyfunc[200];
 
@@ -30,6 +33,8 @@ int main(void){
 	*/
 
 	uint8_t x = 0;
+
+	memcpy(copyfunc, (uint8_t *)(appFrame-1), 200);
 
 	//inc(&x);
 
