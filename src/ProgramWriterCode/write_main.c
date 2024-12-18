@@ -9,8 +9,11 @@ uint8_t read_buf[256] = {0};
 #define WRITE
 #define READx
 
-extern int appbegin;
-extern int append;
+extern uint32_t _appbegin;
+extern uint32_t _append;
+
+
+
 
 
 uint8_t copyfunc[200];
@@ -34,14 +37,21 @@ int main(void){
 
 	uint8_t x = 0;
 
-	memcpy(copyfunc, (uint8_t *)(appFrame-1), 200);
+	//memcpy(copyfunc, (uint8_t *)(appFrame-1), 200);
+
+
+	uint32_t app_begin_location = (uint32_t)(&_appbegin);
+	uint32_t app_end_section = (uint32_t)(&_append);
+
+	uint32_t prog_size = app_end_section - app_begin_location;
 
 	//inc(&x);
 
 	// If we conveniently make sure to copy the previous function then everything
 	//     works out alright
 
-	spi_flash_write_function(0x00, 200, (uint8_t *) (appFrame-1), 0);
+	spi_flash_write_func_memory(0x00, prog_size, (uint8_t*) app_begin_location,
+			0, (appFrame-1) - app_begin_location);
 
 
 	printf("WROTE FUNCTION\r\n");

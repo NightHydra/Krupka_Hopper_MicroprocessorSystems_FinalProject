@@ -53,7 +53,7 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = 0x20080000;    /* end of RAM */
+_estack = 0x20040000;    /* end of RAM */
 
 _Min_Heap_Size = 0;      /* required amount of heap  */
 _Min_Stack_Size = 0x2000; /* required amount of stack */
@@ -62,7 +62,7 @@ _Min_Stack_Size = 0x2000; /* required amount of stack */
 MEMORY
 {
   RAM (xrw)		: ORIGIN = 0x20000000, LENGTH = 256K
-  APPRAM (xrw)  : ORIGIN = 0x20040000, LENGTH = 128K
+  APPRAM (xrw)  : ORIGIN = 0x20040000, LENGTH = 256K
   ROM (rx)		: ORIGIN = 0x8000000, LENGTH = 2048K
 }
 
@@ -79,14 +79,14 @@ SECTIONS
   
   .appdat :
   {
+  	_appbegin = .;
   	. = ALIGN(4);
   	*./src/SamplePrograms/Simple_Test*(.text*)
-  	__appbegin = .;
   	*./src/SamplePrograms/Simple_Test*(.rodata*)
   	*./src/SamplePrograms/Simple_Test*(.data*)
   	*./src/SamplePrograms/Simple_Test*(.bss*)
   	. = ALIGN(4);
-  	__append = .;
+  	_append = .;
   } >APPRAM
   
   /* The program code and other data into ROM memory */
@@ -199,7 +199,6 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
-
   
 
   /* Remove information from the compiler libraries */

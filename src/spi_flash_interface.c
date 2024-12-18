@@ -31,6 +31,7 @@ typedef enum
 {
 	READY_TO_POLL_STATE,
 	POLLING_DEVICE_ID_STATE,
+	READING_IN_ROM_HEADER_STATE,
 	READING_IN_ROM_STATE
 } round_robin_read_state_t;
 
@@ -52,6 +53,8 @@ cartridge_t * cartidges_slots_to_read_into;
 TIM_HandleTypeDef begin_poll_timer_handle;
 
 uint8_t device_id_buf[8];
+
+uint8_t cart_header_buf[8];
 
 
 /** =============================================================
@@ -233,24 +236,32 @@ uint8_t spi_flash_read_status_register(uint8_t const cart_slot)
 }
 
 void spi_flash_write_page(uint8_t * const data, uint16_t const datalen,
-		uint32_t const addr, uint8_t const cart_slot)
+		uint32_t const addr, uint8_t const cart_slot, bool begin,
+		bool end)
 {
-	spi_flash_enable_write(cart_slot);
+	if (begin)
+	{
+		spi_flash_enable_write(cart_slot);
 
+		uint8_t setup_sequence[4];
+		setup_sequence[0] = 0x02; // The write instruction
+		setup_sequence[1] = (uint8_t) (addr >> 16);
+		setup_sequence[2] = (uint8_t) (addr >> 8);
+		setup_sequence[3] = (uint8_t) (addr);
 
-	uint8_t setup_sequence[4];
-	setup_sequence[0] = 0x02; // The write instruction
-	setup_sequence[1] = (uint8_t) (addr >> 16);
-	setup_sequence[2] = (uint8_t) (addr >> 8);
-	setup_sequence[3] = (uint8_t) (addr);
+		cart_nss_activate(cart_slot);
 
-	cart_nss_activate(cart_slot);
+		HAL_SPI_Transmit(&flash_spi_handle, setup_sequence, 4, HAL_MAX_DELAY);
+	}
 
-	HAL_SPI_Transmit(&flash_spi_handle, setup_sequence, 4, HAL_MAX_DELAY);
 
 	HAL_SPI_Transmit(&flash_spi_handle, data, datalen, HAL_MAX_DELAY);
 
-	cart_nss_deactivate(cart_slot);
+	if (end)
+	{
+		cart_nss_deactivate(cart_slot);
+	}
+
 
 }
 
@@ -290,9 +301,11 @@ void spi_flash_erase_sector(uint32_t addr, uint8_t const cart_slot)
 	cart_nss_deactivate(cart_slot);
 }
 
-void spi_flash_write_function(uint32_t flash_addr, uint16_t num_bytes,
-	uint8_t * func_ptr, uint8_t const cart_slot)
+void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
+	uint8_t * app_begin_addr, uint8_t const cart_slot, uint32_t starting_func_offset)
 {
+	// Write the number of bytes and the main function pointer
+	//    as the first 8 bytes
 	spi_flash_erase_sector(flash_addr, cart_slot);
 
 	while(spi_flash_erase_or_write_in_progess(cart_slot))
@@ -300,18 +313,46 @@ void spi_flash_write_function(uint32_t flash_addr, uint16_t num_bytes,
 		printf("Waiting....\r\n");
 	}
 
+	static uint8_t header_buf[8];
+	for (uint8_t i = 0; i<4; ++i)
+	{
+		header_buf[i] = (uint8_t) ((num_bytes >> (8*(3-i))) & 0xFF);
+		header_buf[i+4] = (uint8_t) ((starting_func_offset >> (8*(3-i))) & 0xFF);
+	}
+
+	spi_flash_write_page(header_buf, 8, flash_addr, cart_slot, true, false);
+	flash_addr += 8;
+
+	bool first_page_ended = false;
+
+	// Take into account that the first page might not
+	//     be able to contain all 256 bytes
+	int16_t max_number_of_bytes_of_first_page =
+		((uint32_t)flash_addr & 0xFF);
+	if (num_bytes > 256 - max_number_of_bytes_of_first_page)
+	{
+		spi_flash_write_page(app_begin_addr, 256 - max_number_of_bytes_of_first_page
+			, flash_addr, cart_slot, first_page_ended, true);
+		first_page_ended = true;
+		flash_addr += 256 - max_number_of_bytes_of_first_page;
+		app_begin_addr += 256 - max_number_of_bytes_of_first_page;
+		num_bytes -= 256 - max_number_of_bytes_of_first_page;
+	}
+
 	// Less than or equal to 256 bytes and just go to the last one
 	while (num_bytes > 256)
 	{
 
-		spi_flash_write_page(func_ptr, 256, flash_addr, cart_slot);
+		spi_flash_write_page(app_begin_addr, 256, flash_addr,
+			cart_slot, false, true);
 		flash_addr += 256;
-		func_ptr +=256;
+		app_begin_addr +=256;
 		num_bytes -= 256;
 	}
 
 
-	spi_flash_write_page(func_ptr, num_bytes, flash_addr, cart_slot);
+	spi_flash_write_page(app_begin_addr, num_bytes, flash_addr,
+		cart_slot, first_page_ended, true);
 
 	while(spi_flash_erase_or_write_in_progess(cart_slot))
 	{
@@ -442,7 +483,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef * hspi)
 			else
 			{
 				memcpy(cartidges_slots_to_read_into[cart_to_read_ind].cart_unique_id, device_id_buf, 8);
-				cart_read_state = READING_IN_ROM_STATE;
+				cart_read_state = READING_IN_ROM_HEADER_STATE;
 				cart_nss_activate(0);
 				static uint8_t begin_read_header[4];
 				begin_read_header[0] = 0x03;
@@ -455,7 +496,27 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef * hspi)
 				HAL_SPI_Transmit(&flash_spi_handle, begin_read_header, 4, HAL_MAX_DELAY);
 
 				HAL_SPI_TransmitReceive_DMA(&flash_spi_handle, &dummy_byte,
-						cartidges_slots_to_read_into[cart_to_read_ind].cart_rom, 200);
+						cart_header_buf, 8);
+			}
+		}
+		else if (cart_read_state == READING_IN_ROM_HEADER_STATE)
+		{
+			// Done reading the cart header, evaluate it and
+			//    move to the next
+			if (processCartHeader(&cartidges_slots_to_read_into[cart_to_read_ind],
+				cart_header_buf))
+			{
+				cart_read_state = READING_IN_ROM_STATE;
+				HAL_SPI_TransmitReceive_DMA(&flash_spi_handle, &dummy_byte,
+					cartidges_slots_to_read_into[cart_to_read_ind].cart_rom,
+					cartidges_slots_to_read_into[cart_to_read_ind].num_bytes);
+			}
+			else
+			{
+				cart_nss_deactivate(0);
+				cart_read_state = READY_TO_POLL_STATE;
+				cartidges_slots_to_read_into[cart_to_read_ind].data_initialized = false;
+				inc_cart_to_read_ind(&cart_to_read_ind);
 			}
 		}
 		else if (cart_read_state == READING_IN_ROM_STATE)

@@ -96,9 +96,6 @@ int main(void){
 	myFunc2 = (void (*) (uint8_t *, uint8_t) )(my_carts[1].cart_rom+1);
 	myFunc3 = (void (*) (uint8_t *, uint8_t) )(my_carts[2].cart_rom+1);
 
-	printf("DONE\r\n");
-
-
 
 	while(1)
 	{
@@ -128,7 +125,7 @@ void EXTI0_IRQHandler()
 
 	//NVIC_ClearPendingIRQ(EXTI0_IRQn);
 
-	printf("Num1 : %d, NUm2 : %d \r\n", num_to_inc1, num_to_inc2);
+	printf("Num1 : %d, Num2 : %d \r\n", num_to_inc1, num_to_inc2);
 
 	uint8_t * goto_ptr = ((uint8_t *)(justCallTheOS));
 	uint32_t addr = (uint32_t)(goto_ptr);
@@ -172,6 +169,8 @@ void SimpleOS()
 		asm volatile ("MOV sp, %0" :
 				"+r" (new_sp_loc));
 		// Now call the function
+		myFunc1 = (void (*) (uint8_t *, uint8_t) )
+			(my_carts[0].cart_rom+my_carts[0].mainoffset+1);
 		myFunc1(&num_to_inc1, 1);
 	}
 
@@ -181,6 +180,8 @@ void SimpleOS()
 				STACK_SPACE_NEEDED_PER_FUNCTION;
 		asm volatile ("MOV sp, %0" :
 				"+r" (new_sp_loc));
+		myFunc2 = (void (*) (uint8_t *, uint8_t) )
+			(my_carts[1].cart_rom+my_carts[1].mainoffset+1);
 		myFunc2(&num_to_inc2, 2);
 	}
 
@@ -190,6 +191,9 @@ void SimpleOS()
 			2*STACK_SPACE_NEEDED_PER_FUNCTION;
 		asm volatile ("MOV sp, %0" :
 			"+r" (new_sp_loc));
+
+		myFunc3 = (void (*) (uint8_t *, uint8_t) )
+			(my_carts[2].cart_rom+my_carts[2].mainoffset+1);
 		myFunc3(&num_to_inc2, -1);
 	}
 

@@ -20,6 +20,8 @@ typedef struct
 	uint8_t cart_rom[CARTRIDGE_ROM_BUFFER_SIZE];
 	uint32_t num_bytes;
 
+	uint32_t mainoffset;
+
 	uint8_t cart_unique_id[8];
 
 	bool data_initialized;
@@ -43,7 +45,8 @@ bool init_flash_cartridge(cartridge_t * const cart, uint8_t cart_slot_ind);
 
 bool cart_ids_match(cartridge_t const * const the_cart, uint8_t * read_id);
 
-
+bool processCartHeader(cartridge_t * const cart_ptr,
+	uint8_t const * const hdr);
 
 
 #endif /* INC_CARTRIDGE_OBJECT_H_ */

@@ -22,14 +22,14 @@ void spi_flash_enable_write(uint8_t const cart_slot);
 uint8_t spi_flash_read_status_register(uint8_t const cart_slot);
 
 void spi_flash_write_page(uint8_t * const data, uint16_t const datalen,
-	uint32_t const addr, uint8_t const cart_slot);
+	uint32_t const addr, uint8_t const cart_slot, bool begin, bool end);
 
 void spi_flash_read_page(uint8_t * const databuf, uint16_t const datalen,
 		uint32_t const addr, uint8_t const cart_slot);
 
 void spi_flash_erase_sector(uint32_t addr, uint8_t const cart_slot);
 
-void spi_flash_write_function(uint32_t const flash_addr, uint16_t num_bytes,
-	uint8_t * memptr, uint8_t const cart_slot);
+void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
+	uint8_t * app_begin_addr, uint8_t const cart_slot, uint32_t starting_func_loc_in_memory);
 
 #endif /* INC_SPI_FLASH_INTERFACE_H_ */

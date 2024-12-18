@@ -7,6 +7,8 @@
 
 #include "SamplePrograms/Simple_Test/ApplicationMain.h"
 
+static uint32_t somevar = 2;
+
 void appFrame(uint8_t * a, uint8_t x)
 {
 	while (1)
@@ -18,7 +20,8 @@ void appFrame(uint8_t * a, uint8_t x)
 
 void mult2(uint8_t * a)
 {
-	*a *= 2;
+	*a *= somevar;
+	++somevar;
 }
 
 
