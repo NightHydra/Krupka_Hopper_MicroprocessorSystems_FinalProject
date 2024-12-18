@@ -11,6 +11,7 @@
 #include "init.h"
 
 void appFrame(uint8_t * a, uint8_t x);
+void mult2(uint8_t * a);
 
 
 #endif /* INC_SAMPLEPROGRAMS_SIMPLE_TEST_APPLICATIONMAIN_H_ */
