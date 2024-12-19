@@ -13,6 +13,7 @@ RM := rm -rf
 -include stm32lib/STM32F7xx_HAL_Driver/Src/subdir.mk
 -include stm32lib/CMSIS/Device/ST/STM32F7xx/Source/Templates/subdir.mk
 -include startup/subdir.mk
+-include src/SamplePrograms/Test2/subdir.mk
 -include src/SamplePrograms/Simple_Test/subdir.mk
 -include src/subdir.mk
 -include objects.mk
@@ -37,37 +38,37 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := FinalTemplate
+BUILD_ARTIFACT_NAME := Krupka_Hopper_MPS_FinalProject
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-FinalTemplate.elf \
+Krupka_Hopper_MPS_FinalProject.elf \
 
 MAP_FILES += \
-FinalTemplate.map \
+Krupka_Hopper_MPS_FinalProject.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-FinalTemplate.list \
+Krupka_Hopper_MPS_FinalProject.list \
 
 OBJCOPY_BIN += \
-FinalTemplate.bin \
+Krupka_Hopper_MPS_FinalProject.bin \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: FinalTemplate.elf secondary-outputs
+main-build: Krupka_Hopper_MPS_FinalProject.elf secondary-outputs
 
 # Tool invocations
-FinalTemplate.elf FinalTemplate.map: $(OBJS) $(USER_OBJS) C:\MicroprocessorSystems\FinalTemplate\LinkerScript.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "FinalTemplate.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\MicroprocessorSystems\FinalTemplate\LinkerScript.ld" --specs=nosys.specs -Wl,-Map="FinalTemplate.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Krupka_Hopper_MPS_FinalProject.elf Krupka_Hopper_MPS_FinalProject.map: $(OBJS) $(USER_OBJS) C:\Users\hoppeb\STM32CubeIDE\workspace_1.16.0\Krupka_Hopper_MPS_FinalProject\LinkerScript.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Krupka_Hopper_MPS_FinalProject.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\hoppeb\STM32CubeIDE\workspace_1.16.0\Krupka_Hopper_MPS_FinalProject\LinkerScript.ld" --specs=nosys.specs -Wl,-Map="Krupka_Hopper_MPS_FinalProject.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -76,19 +77,19 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-FinalTemplate.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "FinalTemplate.list"
+Krupka_Hopper_MPS_FinalProject.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Krupka_Hopper_MPS_FinalProject.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
-FinalTemplate.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "FinalTemplate.bin"
+Krupka_Hopper_MPS_FinalProject.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Krupka_Hopper_MPS_FinalProject.bin"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) FinalTemplate.bin FinalTemplate.elf FinalTemplate.list FinalTemplate.map default.size.stdout
+	-$(RM) Krupka_Hopper_MPS_FinalProject.bin Krupka_Hopper_MPS_FinalProject.elf Krupka_Hopper_MPS_FinalProject.list Krupka_Hopper_MPS_FinalProject.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)

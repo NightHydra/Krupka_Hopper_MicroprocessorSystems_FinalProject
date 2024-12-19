@@ -24,6 +24,7 @@ OBJCOPY_BIN :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 src/SamplePrograms/Simple_Test \
+src/SamplePrograms/Test2 \
 src \
 startup \
 stm32lib/CMSIS/Device/ST/STM32F7xx/Source/Templates \

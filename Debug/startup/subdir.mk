@@ -16,7 +16,7 @@ S_DEPS += \
 
 # Each subdirectory must supply rules for building sources it contributes
 startup/%.o: ../startup/%.s startup/subdir.mk
-	arm-none-eabi-gcc -mcpu=cortex-m7 -g3 -c -I"C:/MicroprocessorSystems/FinalTemplate/inc" -x assembler-with-cpp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m7 -g3 -c -I"C:/Users/hoppeb/STM32CubeIDE/workspace_1.16.0/Krupka_Hopper_MPS_FinalProject/inc" -x assembler-with-cpp -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "$@" "$<"
 
 clean: clean-startup
 
