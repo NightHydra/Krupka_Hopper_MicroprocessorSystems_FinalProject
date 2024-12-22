@@ -10,8 +10,8 @@
 
 #include "init.h"
 
-void appFrame(uint8_t * a, uint8_t x);
-void mult2(uint8_t * a);
+void appFrame(void * arg);
+void mult2(uint32_t * a);
 
 
 #endif /* INC_SAMPLEPROGRAMS_SIMPLE_TEST_APPLICATIONMAIN_H_ */

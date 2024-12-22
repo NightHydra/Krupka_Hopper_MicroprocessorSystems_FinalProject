@@ -1,19 +1,24 @@
 #include "init.h"
 #include "spi_flash_interface.h"
 #include "SamplePrograms/Simple_test/ApplicationMain.h"
+#include "SamplePrograms/Fib_Test/fib.h"
+#include "SamplePrograms/Test2/Check1.h"
 
 
-uint8_t read_buf[256] = {0};
-
-//#define ERASE
-#define WRITE
-#define READx
-
-extern int appbegin;
-extern int append;
+// This is how we access the variables from the linker script
+extern uint32_t _appbegin;
+extern uint32_t _append;
 
 
-uint8_t copyfunc[200];
+#define BEGINNING_FUNCTION (fib)
+#define CART_TO_WRITE_TO (0)
+
+
+
+void myPrint(void * str)
+{
+	printf("%s", (char *) str);
+}
 
 int main(void){
 
@@ -22,29 +27,26 @@ int main(void){
 	// Read the README in the base directory of this project.
 	spi_flash_interface_initialize_SPI();
 
-	//spi_flash_interface_validate_chip();
 
-	/**
-	memcpy(func, inc-1, 1000);
-	uint8_t x = 0;
+	// Calculate the starting memory address of the application
+	//     based on the linker script variables.
+	// The address actually needs to be taken here since the data is actually
+	//     garbage and the starting location we are after is actually the address
+	uint32_t app_begin_location = (uint32_t)(&_appbegin);
+	uint32_t app_end_section = (uint32_t)(&_append);
 
-	void (*myFunc)(uint8_t * );
-	myFunc = (void (*)(uint8_t * )) (func-1);
-	*/
-
-	uint8_t x = 0;
-
-	memcpy(copyfunc, (uint8_t *)(appFrame-1), 200);
-
-	//inc(&x);
-
-	// If we conveniently make sure to copy the previous function then everything
-	//     works out alright
-
-	spi_flash_write_function(0x00, 200, (uint8_t *) (appFrame-1), 0);
+	// Calculate the progam size
+	uint32_t prog_size = app_end_section - app_begin_location;
 
 
-	printf("WROTE FUNCTION\r\n");
+	// Write the function to the flash chip
+	spi_flash_write_func_memory(0x00, prog_size, (uint8_t*) app_begin_location,
+			CART_TO_WRITE_TO, (BEGINNING_FUNCTION-1) - app_begin_location);
+
+
+	// And have a nice print statement saying it is done.
+	printf("Wrote program of %ld bytes to cart %d\r\n", prog_size,
+		CART_TO_WRITE_TO);
 
 	while(1)
 	{

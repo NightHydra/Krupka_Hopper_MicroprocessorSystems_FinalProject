@@ -56,13 +56,13 @@ ENTRY(Reset_Handler)
 _estack = 0x20080000;    /* end of RAM */
 
 _Min_Heap_Size = 0;      /* required amount of heap  */
-_Min_Stack_Size = 0x2000; /* required amount of stack */
+_Min_Stack_Size = 0x8000; /* required amount of stack */
 
 /* Memories definition */
 MEMORY
 {
   RAM (xrw)		: ORIGIN = 0x20000000, LENGTH = 256K
-  APPRAM (xrw)  : ORIGIN = 0x20040000, LENGTH = 128K
+  APPRAM (xrw)  : ORIGIN = 0x20040000, LENGTH = 256K
   ROM (rx)		: ORIGIN = 0x8000000, LENGTH = 2048K
 }
 
@@ -79,14 +79,21 @@ SECTIONS
   
   .appdat :
   {
+  	/* The starting memory location for our custom program*/
+  	_appbegin = .;
   	. = ALIGN(4);
-  	*./src/SamplePrograms/Simple_Test*(.text*)
-  	__appbegin = .;
-  	*./src/SamplePrograms/Simple_Test*(.rodata*)
-  	*./src/SamplePrograms/Simple_Test*(.data*)
-  	*./src/SamplePrograms/Simple_Test*(.bss*)
+  	
+  	/* Take all of the code from the SamplePrograms folder
+  	 and put in the APPRAM section of memory */
+  	*./src/SamplePrograms*(.text*)
+  	*./src/SamplePrograms*(.rodata*)
+  	*./src/SamplePrograms*(.data*)
+  	*./src/SamplePrograms*(.bss*)
+  	*./src/SamplePrograms*(.preinit_array*)
+  	
   	. = ALIGN(4);
-  	__append = .;
+  	/* The ending memory address location for our custom program*/
+  	_append = .;
   } >APPRAM
   
   /* The program code and other data into ROM memory */
@@ -199,7 +206,6 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
-
   
 
   /* Remove information from the compiler libraries */
