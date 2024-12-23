@@ -7,13 +7,9 @@
 
 #include "SamplePrograms/Fib_Test/fib.h"
 
-<<<<<<< HEAD
 /**
  * @brief Simple fibonachi function to test stuff out
  */
-=======
-
->>>>>>> master
 void fib(void * fibNum)
 {
 	uint32_t n1 = 0;

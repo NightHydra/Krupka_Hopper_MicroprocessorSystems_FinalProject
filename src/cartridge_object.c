@@ -24,7 +24,7 @@ bool init_flash_cartridge(cartridge_t * const cart, uint8_t cart_slot_ind)
 
 bool cart_ids_match(cartridge_t const * const the_cart, uint8_t * read_id)
 {
-	uint8_t * cart_id = the_cart->cart_unique_id;
+	uint8_t const * cart_id = the_cart->cart_unique_id;
 
 	for (unsigned int i = 0; i < 8; ++i)
 	{
