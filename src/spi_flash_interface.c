@@ -27,6 +27,10 @@
  *  SELF DEFINED TYPES
  *  ========================================================================= */
 
+
+/**
+ * The states for the cart polling state machine
+ */
 typedef enum
 {
 	READY_TO_POLL_STATE,
@@ -39,19 +43,42 @@ typedef enum
  * GLOBAL VARIABLES
  * =================================================================== */
 
-
+/**
+ * The hardware handlers for the spi flash and the dmas
+ */
 static SPI_HandleTypeDef flash_spi_handle;
 static DMA_HandleTypeDef flash_tx_dma_handle;
 static DMA_HandleTypeDef flash_rx_dma_handle;
 
+/**
+ * @brief Globals for the cartridge nss ports and pins that enable talking to a speicfic cart.
+ */
 GPIO_TypeDef * cartridge_nss_ports[MAX_NUMBER_OF_CARTRIDGES] = {GPIOA, GPIOH, GPIOJ}; // D10, D9,D8
 uint16_t cartridge_nss_pin_numbers[MAX_NUMBER_OF_CARTRIDGES] = {GPIO_PIN_11, GPIO_PIN_6, GPIO_PIN_4};
 
-round_robin_read_state_t cart_read_state;;
-uint8_t cart_to_read_ind;
+/**
+ * @brief Stores the state in our
+ */
+round_robin_read_state_t cart_read_state;
+/**
+ * @brief The index of the cart to poll next or that is currently
+ *     being polled
+ */
+uint8_t cart_to_read_ind = 0;
+
+/**
+ * @brief The representation for our array of cartridges.  Store the pointers
+ *     to the cart memory array in @ref readMain.cpp
+ */
 cartridge_t * cartidges_slots_to_read_into;
+/**
+ * @brief Handler for the timer that causes an interrupt to start polling a cart
+ */
 TIM_HandleTypeDef begin_poll_timer_handle;
 
+/**
+ * @brief Buffers to store received DMA data for the id and cart header
+ */
 uint8_t device_id_buf[8];
 
 uint8_t cart_header_buf[8];
@@ -61,25 +88,40 @@ uint8_t cart_header_buf[8];
  *  Initialization Function
     ============================================================= */
 
-// A very simple function for driving the nss pin low or high
+// Very simple functions for driving the nss pin low or high
+
+/**
+ * @brief Helper function for driving an NSS pin low
+ */
 void cart_nss_activate(uint8_t cart_num)
 {
 	HAL_GPIO_WritePin(cartridge_nss_ports[cart_num], cartridge_nss_pin_numbers[cart_num], GPIO_PIN_RESET);
 }
+
+/**
+ * @brief Helper function for releases an NSS pin
+ */
 void cart_nss_deactivate(uint8_t cart_num)
 {
 	HAL_GPIO_WritePin(cartridge_nss_ports[cart_num], cartridge_nss_pin_numbers[cart_num], GPIO_PIN_SET);
 }
+
+/**
+ * @brief A helper functions for wrapping around the read index when
+ *    it gets to the max cart number
+ */
 void inc_cart_to_read_ind(uint8_t * ind)
 {
 	++(*ind);
-	if (*ind == 3)
+	if (*ind >= 3)
 	{
 		*ind = 0;
 	}
 }
 
-
+/**
+ * @brief Initialization for the SPI DMA
+ */
 void spi_flash_dma_init()
 {
 	// Configure the DMA first, then the SPI
@@ -126,6 +168,11 @@ void spi_flash_dma_init()
 
 }
 
+
+/**
+ * @brief Initialize the GPIO pins used for the SPI2 peripheral and the respective
+ *    NSS pins for each cart
+ */
 void spi_flash_gpio_init()
 {
 	// Initialize the MOSI and MISO pins
@@ -162,6 +209,10 @@ void spi_flash_gpio_init()
 
 }
 
+/**
+ * @brief Function for initializing the SPI interface.  This function also
+ *    initializes the respective DMA and the GPIO pins
+ */
 void spi_flash_interface_initialize_SPI()
 {
 	spi_flash_gpio_init();
@@ -192,6 +243,10 @@ void spi_flash_interface_initialize_SPI()
 }
 
 
+/**
+ * @brief sends a 1 byte command for enabling the write bit of the status register
+ *     in the flash cart.  Calling this before erases any section of flash is required.
+ */
 void spi_flash_enable_write(uint8_t const cart_slot)
 {
 	uint8_t to_tx = 0x06;
@@ -204,6 +259,12 @@ void spi_flash_enable_write(uint8_t const cart_slot)
 	cart_nss_deactivate(cart_slot);
 }
 
+
+/**
+ * @brief Sends a SPI command to the flash chip to see if an erase or write is
+ *     occurring.  Used since you cant write while the flash chip is erasing a sector
+ *     Upon testing it is determined that this function is necessary
+ */
 bool spi_flash_erase_or_write_in_progess(uint8_t const cart_slot)
 {
 	uint8_t to_tx[2] = {0x05, 0x00};
@@ -219,7 +280,11 @@ bool spi_flash_erase_or_write_in_progess(uint8_t const cart_slot)
 	return (rx_buf[1] &0x01);
 }
 
-
+/**
+ * @brief Reads status register 1 of the SPI flash memory chip and returns
+ *     the response in a UINT8.
+ * @note This function blocks until the byte is received.
+ */
 uint8_t spi_flash_read_status_register(uint8_t const cart_slot)
 {
 	uint8_t to_tx[2] = {0x05, 0x00};
@@ -235,6 +300,17 @@ uint8_t spi_flash_read_status_register(uint8_t const cart_slot)
 	return rx_buf[1];
 }
 
+
+/**
+ * @brief Writes an entire page of flash memory
+ * @param begin determines if this write needs to drive the nss pin low
+ *     and start the write instruction.  This is needed because if we want
+ *     to write 2 bytes to a page, then the remaining 254 bytes we have to do
+ *     this all with 1 command.
+ * @param end If true this means that we should finish the instruction with this
+ *    call and if false the do not finish it and allow for the function to be called
+ *    again and write more memory to the same page.
+ */
 void spi_flash_write_page(uint8_t * const data, uint16_t const datalen,
 		uint32_t const addr, uint8_t const cart_slot, bool begin,
 		bool end)
@@ -265,6 +341,13 @@ void spi_flash_write_page(uint8_t * const data, uint16_t const datalen,
 
 }
 
+/**
+ * @brief Reads @ref datalen bytes from the flash memory starting at
+ *     @ref addr.
+ * @note This function is blocking so it should not be used for polling
+ *     carts.  Instead DMA and interrupts should be used for that functionality
+ *     if blocking is not desired.
+ */
 void spi_flash_read_data(uint8_t * const databuf, uint16_t const datalen,
 		uint32_t const addr, uint8_t const cart_slot)
 {
@@ -284,6 +367,9 @@ void spi_flash_read_data(uint8_t * const databuf, uint16_t const datalen,
 	cart_nss_deactivate(cart_slot);
 }
 
+/**
+ * Erase a sector of the flash memory starting at @ref addr
+ */
 void spi_flash_erase_sector(uint32_t addr, uint8_t const cart_slot)
 {
 	spi_flash_enable_write(cart_slot);
@@ -301,6 +387,11 @@ void spi_flash_erase_sector(uint32_t addr, uint8_t const cart_slot)
 	cart_nss_deactivate(cart_slot);
 }
 
+
+/**
+ * Writes a program to the flash memory including the headers starting at @ref
+ *     app_begin_addr
+ */
 void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
 	uint8_t * app_begin_addr, uint8_t const cart_slot, uint32_t starting_func_offset)
 {
@@ -310,7 +401,7 @@ void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
 
 	while(spi_flash_erase_or_write_in_progess(cart_slot))
 	{
-		printf("Waiting....\r\n");
+		printf("Waiting....\r");
 	}
 
 	static uint8_t header_buf[8];
@@ -340,7 +431,7 @@ void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
 	}
 
 	// Less than or equal to 256 bytes and just go to the last one
-	while (num_bytes > 256)
+	while (num_bytes >= 256)
 	{
 
 		spi_flash_write_page(app_begin_addr, 256, flash_addr,
@@ -383,6 +474,10 @@ void timer_init()
 	HAL_NVIC_EnableIRQ(TIM7_IRQn); //TIM 7 Interupt Enable through NVIC (TIM 7 Position is 55)
 }
 
+/**
+ * @brief This function starts reading the cart data into the cartridge buffers
+ *     in the array that @ref cart_slots points to
+ */
 void spi_flash_begin_autonomous_reads(cartridge_t * const cart_slots)
 {
 	// Initialize a timer and have it trigger interrupts every 1 second to start a cart poll
@@ -394,11 +489,16 @@ void spi_flash_begin_autonomous_reads(cartridge_t * const cart_slots)
 	timer_init();
 }
 
-void TIM7_IRQHandler() {
-	HAL_TIM_IRQHandler(&begin_poll_timer_handle);
 
+void TIM7_IRQHandler()
+{
+	HAL_TIM_IRQHandler(&begin_poll_timer_handle);
 }
 
+
+/**
+ * @brief Upon the timer interrupt start polling the cart
+ */
 void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef * htim)
 {
 	static uint8_t read_device_id_instruction_byte = 0x4B;
@@ -409,7 +509,7 @@ void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef * htim)
 		{
 			cart_read_state = POLLING_DEVICE_ID_STATE;
 			// Just start transmitting using the dma while we go back to doing other stuff
-			cart_nss_activate(0);
+			cart_nss_activate(cart_to_read_ind);
 			HAL_SPI_Transmit_DMA(&flash_spi_handle, &read_device_id_instruction_byte, 5);
 		}
 	}
@@ -430,7 +530,10 @@ void SPI2_IRQHandler()
 	HAL_SPI_IRQHandler(&flash_spi_handle);
 }
 
-// SPI Callbacks
+
+/**
+ * @brief Handle when the SPI DMA is finished sending the message
+ */
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef * hspi)
 {
 	static uint8_t dummy_byte = 0;
@@ -445,6 +548,10 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef * hspi)
 		}
 	}
 }
+
+/**
+ * Callback for when SPI TX/RX is complete.
+ */
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef * hspi)
 {
 	static uint8_t dummy_byte = 0;
@@ -457,7 +564,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef * hspi)
 			//    If it is 0, assume the cart is empty and move on
 			// If not, compare and see if it is what is expected, if not
 			//    we then read in that carts data
-			cart_nss_deactivate(0);
+			cart_nss_deactivate(cart_to_read_ind);
 
 			// Check to see if the id is all 0s, if so dont read it in.
 			bool cart_all_zeros = true;
@@ -484,7 +591,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef * hspi)
 			{
 				memcpy(cartidges_slots_to_read_into[cart_to_read_ind].cart_unique_id, device_id_buf, 8);
 				cart_read_state = READING_IN_ROM_HEADER_STATE;
-				cart_nss_activate(0);
+				cart_nss_activate(cart_to_read_ind);
 				static uint8_t begin_read_header[4];
 				begin_read_header[0] = 0x03;
 				begin_read_header[1] = 0x00;
@@ -504,7 +611,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef * hspi)
 			// Done reading the cart header, evaluate it and
 			//    move to the next
 			if (processCartHeader(&cartidges_slots_to_read_into[cart_to_read_ind],
-				cart_header_buf))
+				cart_header_buf, cart_to_read_ind))
 			{
 				cart_read_state = READING_IN_ROM_STATE;
 				HAL_SPI_TransmitReceive_DMA(&flash_spi_handle, &dummy_byte,
@@ -513,7 +620,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef * hspi)
 			}
 			else
 			{
-				cart_nss_deactivate(0);
+				cart_nss_deactivate(cart_to_read_ind);
 				cart_read_state = READY_TO_POLL_STATE;
 				cartidges_slots_to_read_into[cart_to_read_ind].data_initialized = false;
 				inc_cart_to_read_ind(&cart_to_read_ind);
@@ -521,7 +628,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef * hspi)
 		}
 		else if (cart_read_state == READING_IN_ROM_STATE)
 		{
-			cart_nss_deactivate(0);
+			cart_nss_deactivate(cart_to_read_ind);
 			cartidges_slots_to_read_into[cart_to_read_ind].data_initialized = true;
 			inc_cart_to_read_ind(&cart_to_read_ind);
 			cart_read_state = READY_TO_POLL_STATE;

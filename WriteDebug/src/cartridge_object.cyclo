@@ -1,4 +1,0 @@
-../src/cartridge_object.c:11:6:ensure_device_id_is_still_the_same	1
-../src/cartridge_object.c:16:6:init_flash_cartridge	1
-../src/cartridge_object.c:21:6:cart_ids_match	3
-../src/cartridge_object.c:38:6:processCartHeader	3

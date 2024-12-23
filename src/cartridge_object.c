@@ -8,6 +8,10 @@
 #include "cartridge_object.h"
 #include "stdbool.h"
 
+/**
+ * @brief Checks to see if a cartridge's previous id is equivalent to the one just
+ *     read in.  Useful for determining if the chip has been switched out or not.
+ */
 bool ensure_device_id_is_still_the_same(cartridge_t const * const cart, uint8_t const cart_slot_ind)
 {
 	return true;
@@ -36,17 +40,23 @@ bool cart_ids_match(cartridge_t const * const the_cart, uint8_t * read_id)
  *    function is in memory.
  */
 bool processCartHeader(cartridge_t * const cart_ptr,
-	uint8_t const * const hdr)
+	uint8_t const * const hdr, uint8_t const index)
 {
 	for (uint8_t i = 0; i<4; ++i)
 	{
 		cart_ptr->num_bytes |= hdr[i] << (8 * (3-i));
 		cart_ptr->mainoffset |= hdr[4+i] << (8 * (3-i));
 	}
-	printf("Cart header read: (size = %ld), (main offset = %d)\r\n",
-		cart_ptr->num_bytes, cart_ptr->mainoffset);
+	printf("Cart header read in slot %d: (size = %ld), (main offset = %ld)\r\n",
+		index+1, cart_ptr->num_bytes, cart_ptr->mainoffset);
 
-	if (cart_ptr->mainoffset > cart_ptr->num_bytes) return false;
+	if (cart_ptr->num_bytes == 0xFFFFFFFF || cart_ptr->num_bytes == 0x00)
+
+	{
+		return false;
+	}
+
+	if (cart_ptr->mainoffset >= cart_ptr->num_bytes) return false;
 
 	return true;
 }

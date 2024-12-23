@@ -34,7 +34,7 @@ static bool const inverted_led[NUMBER_OF_LEDS_TO_CONTROL] = {false, false, false
 
 static uint8_t previous_input_data[NUMBER_OF_LEDS_TO_CONTROL] = {PIN_LOW, PIN_LOW, PIN_LOW, PIN_LOW};
 
-uint8_t a = 1;
+static uint8_t a = 1;
 
 void checkapp(void * a){
 		RCC->AHB1ENR |= GPIO_CLOCKS_TO_ENABLE_BITS_TO_SET;

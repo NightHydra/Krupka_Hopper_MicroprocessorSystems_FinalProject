@@ -56,7 +56,7 @@ ENTRY(Reset_Handler)
 _estack = 0x20040000;    /* end of RAM */
 
 _Min_Heap_Size = 0;      /* required amount of heap  */
-_Min_Stack_Size = 0x2000; /* required amount of stack */
+_Min_Stack_Size = 0x8000; /* required amount of stack */
 
 /* Memories definition */
 MEMORY
@@ -79,13 +79,20 @@ SECTIONS
   
   .appdat :
   {
+  	/* The starting memory location for our custom program*/
   	_appbegin = .;
   	. = ALIGN(4);
-  	*./src/SamplePrograms/Simple_Test*(.text*)
-  	*./src/SamplePrograms/Simple_Test*(.rodata*)
-  	*./src/SamplePrograms/Simple_Test*(.data*)
-  	*./src/SamplePrograms/Simple_Test*(.bss*)
+  	
+  	/* Take all of the code from the SamplePrograms folder
+  	 and put in the APPRAM section of memory */
+  	*./src/SamplePrograms*(.text*)
+  	*./src/SamplePrograms*(.rodata*)
+  	*./src/SamplePrograms*(.data*)
+  	*./src/SamplePrograms*(.bss*)
+  	*./src/SamplePrograms*(.preinit_array*)
+  	
   	. = ALIGN(4);
+  	/* The ending memory address location for our custom program*/
   	_append = .;
   } >APPRAM
   

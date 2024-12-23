@@ -1,0 +1,83 @@
+<mxfile host="Electron" modified="2024-12-18T21:25:41.030Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/23.1.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="IyE3UPPf0l82v311nPul" version="23.1.5" type="device">
+  <diagram name="Page-1" id="SfjLB7xbl5zSZiqGBk8V">
+    <mxGraphModel dx="948" dy="551" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cS6H6UMi0To7FYbiMAJ7-1" target="cS6H6UMi0To7FYbiMAJ7-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-1" value="Increment prog_index.&amp;nbsp; If prog_index &amp;gt; 3 set it back to 0" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="110" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cS6H6UMi0To7FYbiMAJ7-2" target="cS6H6UMi0To7FYbiMAJ7-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="290" />
+              <mxPoint x="660" y="140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-24" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;No&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cS6H6UMi0To7FYbiMAJ7-4">
+          <mxGeometry x="-0.4697" y="2" relative="1" as="geometry">
+            <mxPoint y="-42" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cS6H6UMi0To7FYbiMAJ7-2" target="cS6H6UMi0To7FYbiMAJ7-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-25" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Yes&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cS6H6UMi0To7FYbiMAJ7-15">
+          <mxGeometry x="0.0114" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-2" value="Is the cartridge at prog_index initialized.&lt;br&gt;&amp;nbsp; Ie. &lt;br&gt;my_carts[prog_index].data_initialized = true?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="223.75" y="230" width="362.5" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cS6H6UMi0To7FYbiMAJ7-6" target="cS6H6UMi0To7FYbiMAJ7-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cS6H6UMi0To7FYbiMAJ7-6" target="cS6H6UMi0To7FYbiMAJ7-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-18" value="No" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cS6H6UMi0To7FYbiMAJ7-16">
+          <mxGeometry x="-0.2076" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-6" value="prog_index = 0 ?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="337.5" y="420" width="135" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-7" value="Use assembly to move the stack pointer to the start of the &quot;stack&quot; for program 1.&amp;nbsp; Call function pointer that points at the correct function" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="417.5" width="130" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="cS6H6UMi0To7FYbiMAJ7-10" target="cS6H6UMi0To7FYbiMAJ7-11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="cS6H6UMi0To7FYbiMAJ7-10" target="cS6H6UMi0To7FYbiMAJ7-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-10" value="prog_index = 1 ?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="337.5" y="562.5" width="135" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-11" value="Use assembly to move the stack pointer to thestart of the&amp;nbsp;&quot;stack&quot; for program 2.&amp;nbsp; Call function pointer that points at the correct function" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="560" width="130" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-20" value="Use assembly to move the stack pointer to the start of the &quot;stack&quot; for program 3.&amp;nbsp; Call function pointer that points at the correct function" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="710" width="130" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-22" value="" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" target="cS6H6UMi0To7FYbiMAJ7-1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="405" y="20" as="sourcePoint" />
+            <mxPoint x="450" y="-10" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cS6H6UMi0To7FYbiMAJ7-23" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Start&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="cS6H6UMi0To7FYbiMAJ7-22">
+          <mxGeometry x="-0.5098" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
