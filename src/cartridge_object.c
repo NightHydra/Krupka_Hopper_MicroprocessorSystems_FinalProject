@@ -12,16 +12,6 @@
  * @brief Checks to see if a cartridge's previous id is equivalent to the one just
  *     read in.  Useful for determining if the chip has been switched out or not.
  */
-bool ensure_device_id_is_still_the_same(cartridge_t const * const cart, uint8_t const cart_slot_ind)
-{
-	return true;
-}
-
-bool init_flash_cartridge(cartridge_t * const cart, uint8_t cart_slot_ind)
-{
-	return true;
-}
-
 bool cart_ids_match(cartridge_t const * const the_cart, uint8_t * read_id)
 {
 	uint8_t const * cart_id = the_cart->cart_unique_id;

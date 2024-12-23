@@ -8,7 +8,6 @@
 extern uint32_t _appbegin;
 extern uint32_t _append;
 
-
 #define BEGINNING_FUNCTION (fib)
 #define CART_TO_WRITE_TO (0)
 
@@ -29,11 +28,9 @@ int main(void){
 	// Calculate the progam size
 	uint32_t prog_size = app_end_section - app_begin_location;
 
-
-	// If we conveniently make sure to copy the previous function then everything
-	//     works out alright
+	// Write the function to the flash chip
 	spi_flash_write_func_memory(0x00, prog_size, (uint8_t*) app_begin_location,
-			CART_TO_WRITE_TO, (BEGINNING_FUNCTION-1) - app_begin_location);
+			CART_TO_WRITE_TO, (uint32_t)(BEGINNING_FUNCTION-1) - app_begin_location);
 
 	// And have a nice print statement saying it is done.
 	printf("Wrote program of %ld bytes to cart %d\r\n", prog_size,

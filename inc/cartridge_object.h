@@ -31,7 +31,6 @@ typedef struct
 	uint32_t num_bytes;
 
 	/*
-<<<<<<< HEAD
 	 * @brief The address of the starting function on the ROM
 	 */
 	uint32_t mainoffset;
@@ -58,18 +57,6 @@ typedef struct
 } cartridge_t;
 
 /**
- * @brief This function takes in an already initialized cartridge and checking to make sure that the
- *     cartridge is still plugged in.  If it is not, then we know to switch it
- * @param cart is a pointer to the cartridge "object" in being used to store the cartridge data and
- *    other cartridge related data
- * @param cart_slot_ind is the "slot" (which NSS pin it is connected to) index
- * @returns returns true if the device id is still the same and false if the device id is not the same
- *
- */
-bool ensure_device_id_is_still_the_same(cartridge_t const * const cart, uint8_t const cart_slot_ind);
-
-
-/**
  * @brief compares the id stored in @ref the_cart and compares it to the 8 byte number
  *     represented by @ref read_id
  */
@@ -79,7 +66,11 @@ bool cart_ids_match(cartridge_t const * const the_cart, uint8_t * read_id);
  * @brief Takes in a uint8_t array representing the cartidge header and the index
  *     of the cart, seeing if it is a valid cart and returns true if so.
  */
-bool init_flash_cartridge(cartridge_t * const cart, uint8_t const cart_slot_ind);
+
+bool processCartHeader(cartridge_t * const cart_ptr,
+    uint8_t const * const hdr, uint8_t const index);
+
+
 
 
 

@@ -27,7 +27,6 @@
  *  SELF DEFINED TYPES
  *  ========================================================================= */
 
-
 /**
  * The states for the cart polling state machine
  */
@@ -80,7 +79,6 @@ TIM_HandleTypeDef begin_poll_timer_handle;
  * @brief Buffers to store received DMA data for the id and cart header
  */
 uint8_t device_id_buf[8];
-
 uint8_t cart_header_buf[8];
 
 
@@ -168,7 +166,6 @@ void spi_flash_dma_init()
 
 }
 
-
 /**
  * @brief Initialize the GPIO pins used for the SPI2 peripheral and the respective
  *    NSS pins for each cart
@@ -242,7 +239,6 @@ void spi_flash_interface_initialize_SPI()
 	__HAL_LINKDMA(&flash_spi_handle, hdmarx, flash_rx_dma_handle);
 }
 
-
 /**
  * @brief sends a 1 byte command for enabling the write bit of the status register
  *     in the flash cart.  Calling this before erases any section of flash is required.
@@ -258,7 +254,6 @@ void spi_flash_enable_write(uint8_t const cart_slot)
 
 	cart_nss_deactivate(cart_slot);
 }
-
 
 /**
  * @brief Sends a SPI command to the flash chip to see if an erase or write is
@@ -299,7 +294,6 @@ uint8_t spi_flash_read_status_register(uint8_t const cart_slot)
 
 	return rx_buf[1];
 }
-
 
 /**
  * @brief Writes an entire page of flash memory
@@ -387,13 +381,12 @@ void spi_flash_erase_sector(uint32_t addr, uint8_t const cart_slot)
 	cart_nss_deactivate(cart_slot);
 }
 
-
 /**
  * Writes a program to the flash memory including the headers starting at @ref
  *     app_begin_addr
  */
 void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
-	uint8_t * app_begin_addr, uint8_t const cart_slot, uint32_t starting_func_offset)
+	uint8_t * app_begin_addr, uint8_t const cart_slot, uint32_t const starting_func_offset)
 {
 	// Write the number of bytes and the main function pointer
 	//    as the first 8 bytes
@@ -422,7 +415,7 @@ void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
 		((uint32_t)flash_addr & 0xFF);
 	if (num_bytes > 256 - max_number_of_bytes_of_first_page)
 	{
-		spi_flash_write_page(app_begin_addr, 256 - max_number_of_bytes_of_first_page
+		spi_flash_write_page((uint8_t *) app_begin_addr, 256 - max_number_of_bytes_of_first_page
 			, flash_addr, cart_slot, first_page_ended, true);
 		first_page_ended = true;
 		flash_addr += 256 - max_number_of_bytes_of_first_page;
@@ -434,7 +427,7 @@ void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
 	while (num_bytes >= 256)
 	{
 
-		spi_flash_write_page(app_begin_addr, 256, flash_addr,
+		spi_flash_write_page((uint8_t*) app_begin_addr, 256, flash_addr,
 			cart_slot, false, true);
 		flash_addr += 256;
 		app_begin_addr +=256;
@@ -442,7 +435,7 @@ void spi_flash_write_func_memory(uint32_t flash_addr, uint32_t num_bytes,
 	}
 
 
-	spi_flash_write_page(app_begin_addr, num_bytes, flash_addr,
+	spi_flash_write_page((uint8_t *) app_begin_addr, num_bytes, flash_addr,
 		cart_slot, first_page_ended, true);
 
 	while(spi_flash_erase_or_write_in_progess(cart_slot))
@@ -489,12 +482,10 @@ void spi_flash_begin_autonomous_reads(cartridge_t * const cart_slots)
 	timer_init();
 }
 
-
 void TIM7_IRQHandler()
 {
 	HAL_TIM_IRQHandler(&begin_poll_timer_handle);
 }
-
 
 /**
  * @brief Upon the timer interrupt start polling the cart
@@ -529,7 +520,6 @@ void SPI2_IRQHandler()
 {
 	HAL_SPI_IRQHandler(&flash_spi_handle);
 }
-
 
 /**
  * @brief Handle when the SPI DMA is finished sending the message
