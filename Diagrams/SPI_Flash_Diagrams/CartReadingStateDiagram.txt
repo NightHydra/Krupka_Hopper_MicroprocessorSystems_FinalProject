@@ -3,14 +3,17 @@ hide empty description
 [*] --> ReadyToPoll : Timer Interrupt / DMA Completion Interrupt
 
 
-ReadyToPoll --> PollingDeviceID : Start DMA SPI RX
+ReadyToPoll --> PollingDeviceID : / Start DMA SPI RX
 
-PollingDeviceID --> ReadyToPoll : Increment Index To Poll
+PollingDeviceID --> ReadyToPoll : Device ID is 0x00 / \n Flag cart as invalid, Index To Poll
+PollingDeviceID --> ReadyToPoll : Device ID is the same as in previous\n poll and != 0x00 /  Index To Poll
 
-PollingDeviceID --> ReadingInROM : Flag the cart as invalid \n Read in 1 word for the program length \n and Start DMA RX for that many bytes
+PollingDeviceID --> ReadingInROMHeader : (Device ID != 0 and \n(ID is different from previous poll or cart is invalidated)\n / Flag the cart as invalid \n Start the DMA to read in the ROM header
 
-ReadingInROM --> ReadingInSAV : Read in 1 word for the save header \n and Start DMA RX for #bytes in save
+ReadingInROMHeader --> ReadingInROM : Cart header is valid / \nStart the DMA for reading in the # of \n bytes provided in the header
 
-ReadingInSAV --> ReadyToPoll : Flag that the cartridge is valid \n Increment the Index To Poll
+ReadingInROMHeader --> ReadyToPoll : Invalid Header / \nIncrement index to poll
+
+ReadingInROM --> ReadyToPoll : / Flag that the cartridge is valid \n Increment the Index To Poll
 
 @enduml
