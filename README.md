@@ -23,3 +23,47 @@ This project works specfically with the [W25Q32JV 32M-BIT SPI flash memory chip]
 ### Key Features
 1. Uses SPI communication protocol for fast data reads.
 2. SPI usage allows to multiple cartridges to be connected on the same BUS.
+
+# Compilation Instructions
+
+## Overview 
+This project is made to compile using the free [STM Cube IDE] (https://www.st.com/en/development-tools/stm32cubeide.html#get-software).  This project also requires an STM HAL (Hardware Abstraction Library) in order to properly function.  This library can be downloaded [here](https://github.com/STMicroelectronics/STM32CubeF7).  Make sure that this is in the same folder as the cloned project is located.
+
+## Building the project to run in write mode (which writes a program to flash memory)
+
+Follow the instructions below
+
+1. Click ```Run``` in the toolbar
+2. Click ```Debug Configurations```
+3. Select the .elf file from the WriteDebug folder under the ```C/C++ Application``` header.
+4. Click Debug
+
+## Building the project to run in read mode
+
+1. Use the instructions from the write debug section, but use the .elf file from the read debug folder.
+2. Put any custom application code to write into the ```SamplePrograms``` Folder.  If another folder is desired, replace all instances of ```SamplePrograms``` in ```LinkerScript.ld``` with the desired folder name.
+3. Import any header files for the custom code files into ```write_main.c```
+4. Replace the value for the #define of ```BEGINNING_FUNCTION``` with the "main" function of the custom application.  NOTE: The main function may not actually be named "main" in the custom code file as this would be confused by the compiler for the main function of the build.
+
+
+# How to contribute
+
+To contibute code to this project submit a pull request to the main branch.  If unit tests are added as a feature to this project, make sure all required unit tests pass and new tests are added to provide coverage of added code.
+
+# Future Improvements
+
+1. Implementing a kernel.  This is used to provide applications with pre-initialized hardware that can be used on the microcontroller.  This is needed for using the on-board DAC, ADC etc.  This is needed incase multiple applications are running that all use the same hardware.  In this case a kernel is needed to control access to this hardware so configurations do not contradict each other.  A few kernel functionality features are listed below.  NOTE : All kernel functions MUST use hardware in their respective DMA modes to minimize processing power used for the kernel functionality.
+1.1 Diagnostic Printing - the printf functionality uses the UART hardware on the board.  Giving all custom applications access to this is of highest priority.
+1.2 Receiving diagnostic data - Implementing UART receive functionality should be added to the kernel for applications to receive data via a USB cable.
+1.3 Screen Functionality - Added functions to allow applications to write data to the screen will be added.
+1.4 USB and HID functionality - We would like to add functionality for applications to implement handling for an external keyboard.
+
+1. Ensuring the Linker Script is modified sufficiently from the default.
+1. Adding Unit Tests
+1.1 Unit tests should be added so the functionality of new code can be verified.
+
+# Contributors
+
+Alek Krupka
+Blake Hopper
+
