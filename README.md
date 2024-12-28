@@ -53,17 +53,17 @@ To contibute code to this project submit a pull request to the main branch.  If 
 # Future Improvements
 
 1. Implementing a kernel.  This is used to provide applications with pre-initialized hardware that can be used on the microcontroller.  This is needed for using the on-board DAC, ADC etc.  This is needed incase multiple applications are running that all use the same hardware.  In this case a kernel is needed to control access to this hardware so configurations do not contradict each other.  A few kernel functionality features are listed below.  NOTE : All kernel functions MUST use hardware in their respective DMA modes to minimize processing power used for the kernel functionality.
-1.1 Diagnostic Printing - the printf functionality uses the UART hardware on the board.  Giving all custom applications access to this is of highest priority.
-1.2 Receiving diagnostic data - Implementing UART receive functionality should be added to the kernel for applications to receive data via a USB cable.
-1.3 Screen Functionality - Added functions to allow applications to write data to the screen will be added.
-1.4 USB and HID functionality - We would like to add functionality for applications to implement handling for an external keyboard.
+  1.1 Diagnostic Printing - the printf functionality uses the UART hardware on the board.  Giving all custom applications access to this is of highest priority.
+  1.2 Receiving diagnostic data - Implementing UART receive functionality should be added to the kernel for applications to receive data via a USB cable.
+  1.3 Screen Functionality - Added functions to allow applications to write data to the screen will be added.
+  1.4 USB and HID functionality - We would like to add functionality for applications to implement handling for an external keyboard.
 
 1. Ensuring the Linker Script is modified sufficiently from the default.
 1. Adding Unit Tests
-1.1 Unit tests should be added so the functionality of new code can be verified.
+  1.1 Unit tests should be added so the functionality of new code can be verified.
 
 # Contributors
 
-Alek Krupka
-Blake Hopper
+1. Alek Krupka
+1. Blake Hopper
 
