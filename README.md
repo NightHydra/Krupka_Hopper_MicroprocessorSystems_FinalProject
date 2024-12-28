@@ -20,9 +20,16 @@ Both build configurations are meant to work with the [32F769IDISCOVERY Board](ht
 
 This project works specfically with the [W25Q32JV 32M-BIT SPI flash memory chip](https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/5059/W25Q32JV_RevI_5-4-21.pdf).  The communication protocol is written to send messages specifically to communicate with this chip so a substitute must also use the same mode of communication.
 
-### Key Features
+# Key Terms
+
+1. SPI (Serial Peripheral Interface) - A Master/Slave full-duplex serial communication protocol.
+2. DMA (Direct Memory Acess) - Specialized Hardware on a microcontroller that allows to data transfers that do not imvolve the CPU.
+3. Kernel - The part of the main OS that allows for applications to access specific hardware.  This is needed so applications have pre-defined configurations for and pre-initialized peripherals.
+
+# Key Features
 1. Uses SPI communication protocol for fast data reads.
 2. SPI usage allows to multiple cartridges to be connected on the same BUS.
+3. Data is read from the flash chip using DMA meaning processes can still run efficiently during polling or reading in a program.
 
 # Compilation Instructions
 
