@@ -23,7 +23,7 @@ This project works specfically with the [W25Q32JV 32M-BIT SPI flash memory chip]
 # Key Terms
 
 1. SPI (Serial Peripheral Interface) - A Master/Slave full-duplex serial communication protocol.
-2. DMA (Direct Memory Access) - Specialized Hardware on a microcontroller that allows to data transfers that do not imvolve the CPU.
+2. DMA (Direct Memory Access) - Specialized Hardware on a microcontroller that allows to data transfers that do not involve the CPU.
 3. Kernel - The part of the main OS that allows for applications to access specific hardware.  This is needed so applications have pre-defined configurations for and pre-initialized peripherals.
 
 # Key Features
